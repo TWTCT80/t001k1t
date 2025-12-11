@@ -1,0 +1,16 @@
+# --- Python ---
+__pycache__/
+*.pyc
+
+# --- Virtuella miljöer (Virtual Environments) ---
+venv/
+env/
+.env
+
+# --- OS-specifika filer (Skräp från Mac/Windows) ---
+.DS_Store
+Thumbs.db
+
+# --- Editor-inställningar (Om du vill slippa se kollegors inställningar) ---
+.vscode/
+.idea/

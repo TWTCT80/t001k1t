@@ -9,7 +9,7 @@ from tools import net_tools
 
 # --- Funktion för att skriva ett tecken i taget ---
 
-def typer(text, delay=0.1):
+def typer(text, delay=0.05):
     for char in text:
         sys.stdout.write(char)
         sys.stdout.flush()
