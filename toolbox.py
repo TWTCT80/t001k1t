@@ -56,7 +56,7 @@ def main():
     while True:
         clrscr()  # --- RENSA SKÄRMEN --- 
         menu()
-        val = input("Ch00s3 yu0r t001: ")
+        val = input("\nCh00s3 yu0r t001: ")
 
         if val == "1":
             time.sleep(1)
@@ -70,6 +70,7 @@ def main():
             pass
         elif val == "0":
             typer("\n --- EXITING ---")
+            
             time.sleep(1)
             sys.exit()
         else:

@@ -8,8 +8,11 @@ def pause():
     input("Pr3ss [3nter] t0 c0nt1nu3...")
 
 def run():
-    print("\n--- P0RTSC4NN3R v1.0 ---")
+    print("\n       --- P0RTSC4NN3R v1.0 ---")
     target = input("\nEnter the IP or URL you want to scan: ")
+    print("\nAnge ett intervall som du vill scanna (ex 1-100). ")
+    from_port = int(input("Ange start: "))
+    to_port = int(input("Ange slut: "))
     
     
 
@@ -26,7 +29,7 @@ def run():
     print("-" * 50)
 
     try:
-        for port in range(0,101):
+        for port in range(from_port,to_port):
             s = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # IPV4, TCP
             s.settimeout(0.1)
             result = s.connect_ex((target_ip, port))
