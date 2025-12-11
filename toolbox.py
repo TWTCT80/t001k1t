@@ -5,7 +5,10 @@
 import os
 import sys
 import time
+import platform
+import subprocess
 from tools import portscanner
+from tools import pingsweep
 
 # --- Funktion för att skriva ett tecken i taget ---
 
@@ -25,6 +28,22 @@ def clrscr():
     else:
         os.system("clear")
 
+
+def get_local_ips():
+    if platform.system().lower() != "windows":
+        try:
+            result = subprocess.check_output(["hostname", "-I"]).decode("utf-8")
+            ips = result.strip().split(" ")
+            ipv4_only = [ip for ip in ips if "." in ip]
+            
+            print(f"     Dina IP nummer: {ipv4_only}")
+            
+        except:
+            return []
+    else:
+        return []
+
+
 def pause():
     input("Pr3ss [3nter] t0 c0nt1nu3...")
 
@@ -42,13 +61,14 @@ def menu() -> None:
     ▐                                                      ▌
     ▐▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▌
           
-                  CYBER SECURITY TOOLKIT
-                         MAIN MENU
-           """)#
-
-    typer("[1]. Portscanner")
-    typer("[2]. Change your mac-address" )
-    typer("[3]. Placeholder" )
+              CYBER SECURITY TOOLKIT FOR LINUX
+                         MAIN MENU""")
+    print("")
+    get_local_ips()
+    print("")
+    typer("[1]. PING SWEEP")
+    typer("[2]. PORT SCAN" )
+    typer("[3]. Change your mac-address" )
     typer("[4]. Placeholder" )
     typer("[0]. Exit")    
 
@@ -60,11 +80,14 @@ def main():
 
         if val == "1":
             time.sleep(1)
-            portscanner.run()
+            pingsweep.get_networks_from_route()
             pause()
         elif val == "2":
-            #Placeholder
-            pass
+            time.sleep(1)
+            portscanner.run()
+            pause()
+
+            
         elif val == "3":
             #Placeholder1
             pass
