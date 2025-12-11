@@ -9,10 +9,11 @@ import platform
 import subprocess
 from tools import portscanner
 from tools import pingsweep
+from tools import macspoof
 
 # --- Funktion för att skriva ett tecken i taget ---
 
-def typer(text, delay=0.03):
+def typer(text, delay=0.02):
     for char in text:
         sys.stdout.write(char)
         sys.stdout.flush()
@@ -28,6 +29,7 @@ def clrscr():
     else:
         os.system("clear")
 
+# --- Få ut IP-ADDRESSER ----
 
 def get_local_ips():
     if platform.system().lower() != "windows":
@@ -35,14 +37,13 @@ def get_local_ips():
             result = subprocess.check_output(["hostname", "-I"]).decode("utf-8")
             ips = result.strip().split(" ")
             ipv4_only = [ip for ip in ips if "." in ip]
-            
             print(f"     Dina IP nummer: {ipv4_only}")
-            
         except:
             return []
     else:
         return []
 
+# --- PAUSE ---
 
 def pause():
     input("Pr3ss [3nter] t0 c0nt1nu3...")
@@ -80,7 +81,8 @@ def main():
 
         if val == "1":
             time.sleep(1)
-            pingsweep.get_networks_from_route()
+            
+            pingsweep.run()
             pause()
         elif val == "2":
             time.sleep(1)
@@ -89,10 +91,11 @@ def main():
 
             
         elif val == "3":
-            #Placeholder1
-            pass
+            time.sleep(1)
+            macspoof.run()
+            pause()
         elif val == "0":
-            typer("\n --- EXITING ---")
+            typer("\n --- SO LONG SUCKER! ---")
             
             time.sleep(1)
             sys.exit()
