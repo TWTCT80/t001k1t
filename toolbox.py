@@ -5,7 +5,7 @@
 import os
 import sys
 import time
-#from tools import portscanner
+from tools import portscanner
 
 # --- Funktion för att skriva ett tecken i taget ---
 
@@ -44,9 +44,10 @@ def menu() -> None:
           
                   CYBER SECURITY TOOLKIT
                          MAIN MENU
-           """)
+           """)#
+
     typer("[1]. Portscanner")
-    typer("[2]. Placeholder" )
+    typer("[2]. Change your mac-address" )
     typer("[3]. Placeholder" )
     typer("[4]. Placeholder" )
     typer("[0]. Exit")    
@@ -58,14 +59,14 @@ def main():
         val = input("Ch00s3 yu0r t001: ")
 
         if val == "1":
-            #portscanner.run()
-            typer(" --- Starting Portscanner --- ")
+            time.sleep(1)
+            portscanner.run()
             pause()
         elif val == "2":
             #Placeholder
             pass
         elif val == "3":
-            #Placeholder
+            #Placeholder1
             pass
         elif val == "0":
             typer("\n --- EXITING ---")
@@ -73,8 +74,9 @@ def main():
             sys.exit()
         else:
             typer("Wr0ng 1nput, Try Ag61n: ")
+            time.sleep(1)
 
 
 
-
-main()
+if __name__ == "__main__":
+    main()
