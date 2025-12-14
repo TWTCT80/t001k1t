@@ -32,16 +32,26 @@ def clrscr():
 # --- Få ut IP-ADDRESSER ----
 
 def get_local_ips():
-    if platform.system().lower() != "windows":
-        try:
-            result = subprocess.check_output(["hostname", "-I"]).decode("utf-8")
-            ips = result.strip().split(" ")
-            ipv4_only = [ip for ip in ips if "." in ip]
-            print(f"     Dina IP nummer: {ipv4_only}")
-        except:
-            return []
-    else:
+    if platform.system().lower() == "windows":
         return []
+
+    try:
+        # Hitta interface som används för default route
+        route = subprocess.check_output(["ip", "route", "get", "1.1.1.1"], text=True).strip()
+        # Ex: "... dev wlan0 src 192.168.1.123 ..."
+        parts = route.split()
+        dev = parts[parts.index("dev") + 1]
+
+        ip_out = subprocess.check_output(["ip", "-4", "-o", "addr", "show", "dev", dev], text=True).strip()
+        # Ex: "3: wlan0    inet 192.168.1.123/24 ..."
+        ip_cidr = ip_out.split()[3]
+        ip = ip_cidr.split("/")[0]
+
+        print(f"              Aktiv NIC: {dev} | IP: {ip}")
+        return [ip]
+    except Exception:
+        return []
+
 
 # --- PAUSE ---
 
@@ -69,8 +79,8 @@ def menu() -> None:
     print("")
     typer("[1]. PING SWEEP")
     typer("[2]. PORT SCAN" )
-    typer("[3]. Change your mac-address" )
-    typer("[4]. Placeholder" )
+    typer("[3]. SPOOF YOUR MAC ADDRESS" )
+    typer("[4]. PLACEHOLDER" )
     typer("[0]. Exit")    
 
 def main():

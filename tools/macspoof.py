@@ -17,22 +17,29 @@ def change_mac(interface, mac):
 def run():
     print("\n=== MAC Spoof ===")
 
-    # 1. Generera slumpad MAC
-    new_mac = random_mac()
-    print(f"[INFO] Ny MAC-adress: {new_mac}")
+    choices = ["eth0", "wlan0"]
+    print("Välj interface:")
+    for i, c in enumerate(choices, 1):
+        print(f"[{i}] {c}")
 
-    # 2. Stoppa NetworkManager
+    try:
+        sel = int(input("Val: "))
+        iface = choices[sel - 1]
+    except Exception:
+        print("[!] Ogiltigt val.")
+        return
+
+    new_mac = random_mac()
+    print(f"[INFO] Ny MAC-adress ({iface}): {new_mac}")
+
     print("[INFO] Stoppar NetworkManager...")
     os.system("sudo systemctl stop NetworkManager")
 
-    # 3. Spoofa både eth0 och wlan0
-    for iface in ["eth0", "wlan0"]:
-        print(f"[INFO] Ändrar MAC på {iface}...")
-        change_mac(iface, new_mac)
+    print(f"[INFO] Ändrar MAC på {iface}...")
+    change_mac(iface, new_mac)
 
-    # 4. Starta NetworkManager igen
     print("[INFO] Startar NetworkManager...")
     os.system("sudo systemctl start NetworkManager")
 
-    print("\n[+] MAC-adress spoofad på eth0 och wlan0.")
+    print(f"\n[+] MAC-adress spoofad på {iface}.")
     print(f"[+] Ny MAC: {new_mac}\n")
