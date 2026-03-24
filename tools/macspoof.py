@@ -1,5 +1,6 @@
-import os
 import random
+import subprocess
+import psutil
 
 
 def random_mac():
@@ -9,22 +10,31 @@ def random_mac():
 
 def change_mac(interface, mac):
     """Spoofar MAC-adress för ett specifikt interface."""
-    os.system(f"sudo ip link set {interface} down")
-    os.system(f"sudo ip link set {interface} address {mac}")
-    os.system(f"sudo ip link set {interface} up")
+    subprocess.run(["sudo", "ip", "link", "set", interface, "down"], check=True)
+    subprocess.run(["sudo", "ip", "link", "set", interface, "address", mac], check=True)
+    subprocess.run(["sudo", "ip", "link", "set", interface, "up"], check=True)
+
+
+def get_interfaces():
+    """Hämtar aktiva nätverksinterface (exkl. loopback)."""
+    return [iface for iface in psutil.net_if_addrs() if iface != "lo"]
 
 
 def run():
     print("\n=== MAC Spoof ===")
 
-    choices = ["eth0", "wlan0"]
+    interfaces = get_interfaces()
+    if not interfaces:
+        print("[!] Inga interface hittades.")
+        return
+
     print("Välj interface:")
-    for i, c in enumerate(choices, 1):
-        print(f"[{i}] {c}")
+    for i, iface in enumerate(interfaces, 1):
+        print(f"[{i}] {iface}")
 
     try:
         sel = int(input("Val: "))
-        iface = choices[sel - 1]
+        iface = interfaces[sel - 1]
     except Exception:
         print("[!] Ogiltigt val.")
         return
@@ -33,13 +43,18 @@ def run():
     print(f"[INFO] Ny MAC-adress ({iface}): {new_mac}")
 
     print("[INFO] Stoppar NetworkManager...")
-    os.system("sudo systemctl stop NetworkManager")
+    subprocess.run(["sudo", "systemctl", "stop", "NetworkManager"], check=True)
 
     print(f"[INFO] Ändrar MAC på {iface}...")
-    change_mac(iface, new_mac)
+    try:
+        change_mac(iface, new_mac)
+    except subprocess.CalledProcessError as e:
+        print(f"[!] Fel vid MAC-byte: {e}")
+        subprocess.run(["sudo", "systemctl", "start", "NetworkManager"])
+        return
 
     print("[INFO] Startar NetworkManager...")
-    os.system("sudo systemctl start NetworkManager")
+    subprocess.run(["sudo", "systemctl", "start", "NetworkManager"], check=True)
 
     print(f"\n[+] MAC-adress spoofad på {iface}.")
     print(f"[+] Ny MAC: {new_mac}\n")
