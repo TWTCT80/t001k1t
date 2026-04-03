@@ -10,6 +10,7 @@ import subprocess
 from tools import portscanner
 from tools import pingsweep
 from tools import macspoof
+from tools import wifimon
 
 # --- Funktion för att skriva ett tecken i taget ---
 
@@ -80,7 +81,7 @@ def menu() -> None:
     typer("[1]. PING SWEEP")
     typer("[2]. PORT SCAN" )
     typer("[3]. SPOOF YOUR MAC ADDRESS" )
-    typer("[4]. PLACEHOLDER" )
+    typer("[4]. WIFI MONITOR / DEAUTH" )
     typer("[0]. Exit")    
 
 def main():
@@ -103,6 +104,10 @@ def main():
         elif val == "3":
             time.sleep(1)
             macspoof.run()
+            pause()
+        elif val == "4":
+            time.sleep(1)
+            wifimon.run()
             pause()
         elif val == "0":
             typer("\n --- SO LONG SUCKER! ---")

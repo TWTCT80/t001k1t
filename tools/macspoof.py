@@ -1,3 +1,4 @@
+import os
 import random
 import subprocess
 import psutil
@@ -34,27 +35,42 @@ def run():
 
     try:
         sel = int(input("Val: "))
+        if not (1 <= sel <= len(interfaces)):
+            raise ValueError("out of range")
         iface = interfaces[sel - 1]
     except Exception:
         print("[!] Ogiltigt val.")
         return
 
+    if os.geteuid() != 0:
+        print("[!] MAC-spoofning kräver root-privilegier (kör med sudo).")
+        return
+
     new_mac = random_mac()
     print(f"[INFO] Ny MAC-adress ({iface}): {new_mac}")
 
-    print("[INFO] Stoppar NetworkManager...")
-    subprocess.run(["sudo", "systemctl", "stop", "NetworkManager"], check=True)
+    nm_check = subprocess.run(
+        ["systemctl", "is-active", "NetworkManager"],
+        capture_output=True, text=True
+    )
+    nm_was_active = nm_check.stdout.strip() == "active"
+
+    if nm_was_active:
+        print("[INFO] Stoppar NetworkManager...")
+        subprocess.run(["sudo", "systemctl", "stop", "NetworkManager"], check=True)
 
     print(f"[INFO] Ändrar MAC på {iface}...")
     try:
         change_mac(iface, new_mac)
     except subprocess.CalledProcessError as e:
         print(f"[!] Fel vid MAC-byte: {e}")
-        subprocess.run(["sudo", "systemctl", "start", "NetworkManager"])
+        if nm_was_active:
+            subprocess.run(["sudo", "systemctl", "start", "NetworkManager"])
         return
 
-    print("[INFO] Startar NetworkManager...")
-    subprocess.run(["sudo", "systemctl", "start", "NetworkManager"], check=True)
+    if nm_was_active:
+        print("[INFO] Startar NetworkManager...")
+        subprocess.run(["sudo", "systemctl", "start", "NetworkManager"], check=True)
 
     print(f"\n[+] MAC-adress spoofad på {iface}.")
     print(f"[+] Ny MAC: {new_mac}\n")

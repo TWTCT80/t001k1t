@@ -4,10 +4,6 @@ from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 
-def pause():
-    input("Pr3ss [3nter] t0 c0nt1nu3...")
-
-
 def scan_port(target_ip, port):
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -23,8 +19,27 @@ def run():
     print("\n       --- P0RTSC4NN3R v1.0 ---")
     target = input("\nEnter the IP or URL you want to scan: ")
     print("\nAnge ett intervall som du vill scanna (ex 1-100). ")
-    from_port = int(input("Ange start: "))
-    to_port = int(input("Ange slut: "))
+    while True:
+        try:
+            from_port = int(input("Ange start: "))
+            break
+        except ValueError:
+            print("[!] Ogiltigt värde. Ange ett heltal.")
+
+    while True:
+        try:
+            to_port = int(input("Ange slut: "))
+            break
+        except ValueError:
+            print("[!] Ogiltigt värde. Ange ett heltal.")
+
+    if not (0 <= from_port <= 65535 and 0 <= to_port <= 65535):
+        print("[!] Portintervallet måste vara inom 0–65535.")
+        return
+
+    if from_port > to_port:
+        print("[!] Startport får inte vara högre än slutport.")
+        return
 
     try:
         target_ip = socket.gethostbyname(target)

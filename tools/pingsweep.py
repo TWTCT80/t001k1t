@@ -1,6 +1,7 @@
 import psutil
 import ipaddress
 import subprocess
+import shutil
 
 
 def get_networks():
@@ -23,6 +24,10 @@ def get_networks():
 def run():
     print("\n=== Nmap Sweep ===")
 
+    if shutil.which("nmap") is None:
+        print("[!] nmap hittades inte. Installera det med: sudo apt install nmap")
+        return
+
     nets = get_networks()
     if not nets:
         print("[!] Inga nät hittades.")
@@ -44,11 +49,16 @@ def run():
 
     print(f"\nSkannar {cidr} med nmap -sn...\n")
 
-    proc = subprocess.run(
-        ["nmap", "-sn", cidr],
-        capture_output=True,
-        text=True
-    )
+    try:
+        proc = subprocess.run(
+            ["nmap", "-sn", cidr],
+            capture_output=True,
+            text=True,
+            timeout=60
+        )
+    except subprocess.TimeoutExpired:
+        print("[!] nmap tog för lång tid och avbröts (timeout 60s).")
+        return
 
     up_hosts = []
     for line in proc.stdout.splitlines():
